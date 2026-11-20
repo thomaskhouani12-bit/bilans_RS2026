@@ -1,0 +1,499 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tableau de classe</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;
+     background:#F7F7FA;color:#25243B;padding:16px}
+h1{font-size:19px;margin-bottom:2px}
+.sous{color:#6B6A85;font-size:13px;margin-bottom:12px;line-height:1.5}
+.barre{display:flex;gap:14px;align-items:center;flex-wrap:wrap;
+       background:#fff;border:1px solid #E4E3EE;border-radius:10px;
+       padding:10px 14px;margin-bottom:10px}
+.barre label{font-size:13px;display:flex;align-items:center;gap:6px}
+input[type=search],select{font:inherit;font-size:13px;padding:5px 8px;
+       border:1px solid #D5D4E2;border-radius:6px;background:#fff}
+input[type=search]{min-width:200px}
+.legende{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:#4A4965;
+         margin-left:auto;align-items:center}
+.legende span{display:flex;align-items:center;gap:5px}
+.puce{width:13px;height:13px;border-radius:50%;display:inline-block}
+#info{background:#3C3489;color:#fff;border-radius:8px;padding:7px 14px;
+      font-size:13px;margin-bottom:10px;min-height:32px;display:flex;
+      align-items:center;gap:8px}
+#info.vide{background:#EEEDF8;color:#6B6A85}
+.cadre{background:#fff;border:1px solid #E4E3EE;border-radius:10px;
+       overflow:auto;max-height:74vh}
+table{border-collapse:separate;border-spacing:0;font-size:12px}
+th,td{padding:0;text-align:center;white-space:nowrap}
+th.theme{background:#EEEDF8;color:#3C3489;font-weight:700;font-size:12px;
+         padding:6px 10px;border-bottom:1px solid #E4E3EE;cursor:pointer;
+         position:sticky;top:0;z-index:20;user-select:none}
+th.theme.replie{opacity:.5}
+th.exo{cursor:help;background:#F6F5FC;color:#4A4965;font-weight:600;font-size:11px;
+       padding:4px 6px;border-bottom:1px solid #E4E3EE;
+       position:sticky;top:30px;z-index:20}
+th.coin{position:sticky;left:0;top:0;z-index:35;background:#EEEDF8;
+        text-align:left;padding:6px 10px;min-width:170px}
+th.coin2{position:sticky;left:0;top:30px;z-index:35;background:#F6F5FC;
+         text-align:left;padding:4px 12px}
+td.nom{position:sticky;left:0;z-index:10;background:#fff;text-align:left;
+       padding:5px 10px;font-weight:700;border-right:1px solid #E4E3EE;
+       min-width:170px}
+td.ligne{position:sticky;left:0;z-index:10;background:#fff;text-align:left;
+         padding:3px 10px;font-size:12px;color:#4A4965;font-weight:500;
+         border-right:1px solid #E4E3EE}
+td.c{padding:3px 6px}
+td.c::after{content:'';display:inline-block;width:14px;height:14px;
+            border-radius:50%;vertical-align:middle;background:#D8D8DC}
+td.n0.a::after{background:#E63329}
+td.n1.a::after{background:#E63329}td.n2::after{background:#F08000}td.n3::after{background:#F5C518}td.n4::after{background:#C3D600}td.n5::after{background:#48A22F}td.n6::after{background:#1E7B32}
+td.c.a::after{box-shadow:0 0 0 1.5px rgba(60,52,137,.3)}
+/* Le plus haut niveau : la croix blanche des pages eleve, en CSS */
+td.n6{position:relative}
+td.n6::before{content:'';position:absolute;
+  left:50%;top:50%;
+  width:8px;height:2px;background:#fff;transform:translate(-50%,-50%);
+  z-index:1;border-radius:1px}
+td.n6 span.croix{position:absolute;left:50%;
+  top:50%;width:2px;height:8px;
+  background:#fff;transform:translate(-50%,-50%);z-index:1;border-radius:1px}
+tr.eleve td{border-top:2px solid #DEDCEC}
+tr.eleve.pair td,tr.suite.pair td{background:#F8F7FC}
+tr.eleve.pair td.nom,tr.suite.pair td.ligne{background:#F3F1FA}
+.ratio{display:block;font-weight:400;font-size:10px;color:#8A89A0;
+       margin-top:1px}
+tr.eleve:hover td,tr.suite:hover td{background:#FBFAFF}
+tr.eleve:hover td.nom,tr.suite:hover td.ligne{background:#F3F1FD}
+td.c.vise::after{outline:2px solid #3C3489;outline-offset:2px}
+tr.bilan td{background:#F6F5FC;font-weight:700;border-top:2px solid #E4E3EE;
+            font-size:11px;color:#3C3489;padding:6px 6px;
+            position:sticky;bottom:0;z-index:15}
+/* La case « Reussite de la classe » est figee dans les DEUX sens :
+   a gauche comme les autres noms, en bas comme sa ligne. */
+tr.bilan td.nom{position:sticky;left:0;bottom:0;z-index:40;
+  background:#EDEBF7;padding:5px 10px;font-size:11px;
+  border-right:1px solid #D9D6EA;border-top:2px solid #E4E3EE}
+/* Pas de pastille dans la ligne de synthese : elle porte des pourcentages */
+tr.bilan td.c::after,tr.bilan td.c::before{display:none}
+tr.bilan td.c span.croix{display:none}
+/* Deux lignes de bilan, separees par un simple filet */
+tr.bilan.b-1 td,tr.bilan.b-1 td.nom{border-top:2px solid #D9D6EA}
+tr.bilan.b-2 td,tr.bilan.b-2 td.nom{border-top:1px solid #ECEAF4}
+tr.bilan .taux.vide{color:#C4C3D2;font-weight:400}
+tr.bilan td.nom .lib{display:block}
+/* Repliees par defaut : le pourcentage seul. Un clic sur l'intitule
+   deplie la ligne et fait apparaitre les scores. */
+tr.bilan td.c .detail,tr.bilan td.nom .detail,tr.bilan td.tps .detail{display:none}
+tr.bilan.ouverte td.c .detail,tr.bilan.ouverte td.nom .detail,
+tr.bilan.ouverte td.tps .detail{display:block}
+tr.bilan td.nom{cursor:pointer;user-select:none}
+tr.bilan td.nom:hover{background:#E4E1F4}
+tr.bilan td.nom:focus-visible{outline:2px solid #3C3489;outline-offset:-2px}
+tr.bilan .chevron{display:inline-block;width:10px;color:#8A89A0;
+  transition:transform .15s}
+tr.bilan.ouverte .chevron{transform:rotate(90deg)}
+@media (prefers-reduced-motion:reduce){tr.bilan .chevron{transition:none}}
+.taux{display:inline-block;min-width:28px}
+.detail{display:block;font-weight:400;font-size:10px;color:#8A89A0}
+/* Separation entre themes : nette mais discrete */
+th.theme,th.exo.debut,td.c.debut,td.tps.debut{border-left:2px solid #DCDAEA}
+th.exo.debut,td.c.debut{border-left:2px solid #E8E6F2}
+/* Colonnes de temps de travail */
+th.exo.temps{background:#EFF3FB;color:#2F4A7A}
+th.theme.temps{background:#E4EBF7;color:#2F4A7A;cursor:default}
+th.exo.temps.courante{background:#DCE6F7;font-weight:800}
+td.tps{padding:3px 8px;font-size:11px;font-weight:700;
+       border-left:1px solid #EDF1F8;background:#FBFCFE}
+td.tps.courante{background:#F2F6FD}
+tr.eleve.pair td.tps{background:#F6F8FC}
+tr.bilan td.tps{background:#EFF3FB;color:#2F4A7A}
+/* Colonne des noms : NOM a gauche, rapport aligne a droite.
+   Le flex est porte par un DIV interne : mis sur le <td> lui-meme, il
+   sortirait la cellule de la mise en page du tableau — elle cesserait
+   de s'etirer a la hauteur de sa ligne ET de rester figee au
+   defilement horizontal. */
+.dedans{display:flex;justify-content:space-between;align-items:baseline;
+  gap:14px;width:100%}
+.etiquette{text-align:left}
+/* Le nom mene au bilan de l'eleve, dans un nouvel onglet pour que le
+   tableau reste ouvert derriere. */
+a.lien-eleve{color:inherit;text-decoration:none;
+  border-bottom:1px dotted rgba(60,52,137,.4)}
+a.lien-eleve:hover{color:#3C3489;border-bottom-style:solid}
+.ratio{font-weight:400;font-size:11px;color:#8A89A0;text-align:right;
+  white-space:nowrap;flex-shrink:0}
+.picto{font-size:13px;margin-right:1px;cursor:help}
+/* Themes masques : boutons pour les faire revenir */
+.replies{background:#fff;border:1px solid #E4E3EE;border-radius:10px;
+  padding:8px 14px;margin-bottom:10px;display:flex;align-items:center;
+  gap:8px;flex-wrap:wrap}
+.replies-titre{font-size:12px;color:#6B6A85}
+.revenir{font:inherit;font-size:12px;cursor:pointer;background:#EEEDF8;
+  color:#3C3489;border:1px solid #D8D5EE;border-radius:14px;padding:3px 11px}
+.revenir:hover{background:#E2DFF6}
+#classes{display:flex;gap:10px}
+#classes label{font-size:13px;display:flex;align-items:center;gap:5px}
+.puce.croisee{position:relative}
+.puce.croisee::after{content:'+';position:absolute;inset:0;color:#fff;
+  font-size:11px;line-height:13px;text-align:center;font-weight:700}
+.rien{padding:36px;text-align:center;color:#6B6A85;line-height:1.7}
+/* ── Resserrement (2026-10-13) ──────────────────────────────────
+   Le tableau faisait 2076 px de large pour 45 colonnes, et il fallait
+   defiler pour voir au-dela du troisieme theme. Ce qui fixait la
+   largeur d'une colonne n'etait ni l'en-tete (« N1 » : 13 px) ni la
+   pastille (14 px), mais le POURCENTAGE des deux lignes de bilan :
+   28 px de min-width + 12 px de marge. Toutes les colonnes etaient
+   taillees pour « 100 % ». Il fait aujourd'hui 1085 px. */
+td.nom, th.nom{min-width:0;padding-left:6px;padding-right:6px}
+td.nom{padding-top:3px;padding-bottom:3px;line-height:1.15}
+td.nom .ratio{font-size:10px;line-height:1.05}
+td.nom .etiquette{display:inline-block;max-width:92px;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom}
+/* Les deux lignes d'un meme eleve, plus proches : on resserre la
+   colonne des noms, qui fixe la hauteur des lignes — surtout pas les
+   cases a pastille, voir l'avertissement plus bas. */
+tr.eleve td.nom{padding-bottom:0}
+tr.suite td.nom{padding-top:0;line-height:1.05}
+/* Un titre de theme n'elargit plus ses colonnes : il passe a la ligne.
+   Sans cela, un theme dont il ne reste qu'un exercice visible imposait
+   132 px a sa colonne. */
+th.theme{white-space:normal;font-size:11px;line-height:1.2;padding:6px 6px}
+th.exo{font-size:10px;padding:4px 2px}
+/* Les en-tetes de periode : une date tient sur une ligne, « avant
+   Toussaint » sur deux, et la colonne garde la largeur d'une date. */
+th.exo.periode{white-space:normal;line-height:1.15;max-width:46px;
+  word-break:break-word}
+/* ⚠ MARGES SYMETRIQUES, imperativement : la croix blanche du plus haut
+   niveau est posee au centre de la CELLULE (left/top:50% du td) tandis
+   que la pastille est centree dans la boite de CONTENU. Des marges
+   inegales decalent l'une sans l'autre, et la croix sort du rond. */
+td.c{padding:1px}
+td.c::after{width:12px;height:12px}
+/* Les deux lignes de bilan : leur marge de 6 px faisait la largeur de
+   toutes les colonnes. On garde la verticale, qui aere, on rogne
+   l'horizontale. */
+tr.bilan td.c{padding-left:1px;padding-right:1px}
+tr.bilan td.nom .lib{white-space:nowrap;font-size:12px}
+tr.bilan .chevron{display:none}
+.taux{min-width:18px;font-size:10px}
+.taux small{font-size:8px;font-weight:600;margin-left:.5px;opacity:.75}
+/* Le ratio s'ecrit en fraction, numerateur sur denominateur : « 23/34 »
+   demandait 22 px sur une ligne et forcait la colonne a s'elargir a
+   l'ouverture ; empiles, 12 px suffisent et la largeur ne bouge plus.
+   Largeur minimale commune, pour que tous les traits soient egaux. */
+tr.bilan td.c .detail{font-size:9px;line-height:1.08}
+tr.bilan td.c .num,tr.bilan td.c .den{display:block;
+  width:-moz-fit-content;width:fit-content;min-width:14px;margin:0 auto;
+  padding:0 1px}
+tr.bilan td.c .num{border-bottom:1px solid currentColor}
+/* La date et l'heure de la mise a jour, en tete de page. */
+.maj{display:inline-block;background:#EEEDF8;color:#3C3489;border-radius:14px;
+  padding:3px 12px;font-size:12.5px;font-weight:700;margin:0 0 10px}
+/* Le repli des colonnes de fin que personne n'a commencees. */
+.cachee{display:none}
+#vides{display:flex;align-items:center;gap:6px;font-size:13px}
+/* ── Smartphone ────────────────────────────────────────────────── */
+@media (max-width:640px){
+  body{padding:8px}
+  h1{font-size:17px}
+  .sous{font-size:12px}
+  .barre{padding:8px 10px;gap:10px}
+  input[type=search]{min-width:0;flex:1}
+  .legende{margin-left:0;width:100%;gap:8px;font-size:11px}
+  .cadre{max-height:68vh;-webkit-overflow-scrolling:touch}
+  td.nom,th.coin{min-width:120px;padding:5px 7px;font-size:11px}
+  /* Sur telephone les noms longs mangeraient toute la largeur : on les
+     coupe a une dizaine de caracteres. Le nom complet reste dans
+     l'infobulle et le lien continue de fonctionner. */
+  .etiquette{display:inline-block;max-width:10ch;overflow:hidden;
+    text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom}
+  td.ligne,th.coin2{padding:3px 7px;font-size:11px}
+  .ratio{font-size:9px}
+  td.c{padding:3px 4px}
+  td.c::after{width:12px;height:12px}
+  th.exo{font-size:10px;padding:3px 4px}
+  th.theme{font-size:11px;padding:5px 7px}
+}
+
+
+</style><style id="replis"></style></head><body>
+<h1>Tableau de classe</h1>
+<div class="maj">Mis à jour le vendredi 20 novembre 2026 à 9h56</div>
+<div class="sous">24 élèves · 10 exercices sur 2 thèmes · une ligne <b>entraînement</b> et une ligne <b>évaluation</b> par élève<br>Cliquez le nom d'un thème pour le replier. En bas, pour les élèves affichés, la part des points attendus qui sont réussis ; cliquez un intitulé pour le détail.</div>
+<div class="barre">
+  <input type="search" id="q" placeholder="Chercher un élève…">
+  <span id="classes"></span>
+  <span id="compte" style="font-size:12px;color:#6B6A85"></span>
+  <div class="legende"><span style="color:#767678"><i class="puce" style="background:#D8D8DC"></i>pas attendu</span><span style="color:#E63329"><i class="puce" style="background:#E63329"></i>maîtrise insuffisante</span><span style="color:#C46800"><i class="puce" style="background:#F08000"></i>début de maîtrise</span><span style="color:#A4840F"><i class="puce" style="background:#F5C518"></i>maîtrise fragile</span><span style="color:#828F00"><i class="puce" style="background:#C3D600"></i>presque maîtrisé</span><span style="color:#48A22F"><i class="puce" style="background:#48A22F"></i>maîtrise satisfaisante</span><span style="color:#1E7B32"><i class="puce croisee" style="background:#1E7B32"></i>très bonne maîtrise</span></div>
+</div>
+<div id="replies" class="replies" hidden>
+  <span class="replies-titre">Thèmes masqués :</span><span id="replies-liste"></span>
+</div>
+<div id="info" class="vide">Survolez une case pour en voir le détail.</div>
+<div class="cadre">
+<table><thead><tr><th class="coin">Élève</th><th class="theme g0 t0" data-g="g0" data-titre="Problèmes additifs en une étape" colspan="5" title="Cliquer pour masquer ce thème">Problèmes additifs en une étape</th><th class="theme g1 t0" data-g="g1" data-titre="Problèmes multiplicatifs en une étape" colspan="5" title="Cliquer pour masquer ce thème">Problèmes multiplicatifs en une étape</th></tr><tr><th class="coin2"></th><th class="exo g0 t0 debut" data-titre="Résoudre un problème additif en une étape de composition d&#x27;états">P4.a1</th><th class="exo g0 t0" data-titre="Résoudre un problème additif en une étape de transformation d&#x27;état">P4.a2</th><th class="exo g0 t0" data-titre="Résoudre un problème additif en une étape de comparaisons d&#x27;états">P4.a3</th><th class="exo g0 t0" data-titre="Résoudre un problème additif en une étape de composition de transformations">P4.a4</th><th class="exo g0 t0" data-titre="Résoudre un problème additif en une étape">P4.a</th><th class="exo g1 t0 debut" data-titre="Résoudre un problème multiplicatif en une étape de situation rectangulaire">P4.m1</th><th class="exo g1 t0" data-titre="Résoudre un problème multiplicatif en une étape de comparaison multiplicative">P4.m2</th><th class="exo g1 t0" data-titre="Résoudre un problème multiplicatif en une étape de produit cartésien">P4.m3</th><th class="exo g1 t0" data-titre="Résoudre un problème multiplicatif en une étape de proportionnalité">P4.m4</th><th class="exo g1 t0" data-titre="Résoudre un problème multiplicatif en une étape">P4.m</th></tr></thead><tbody><tr class="eleve" data-nom="abdou wassil wassil" data-famille="abdou wassil" data-classe="" data-affiche="ABDOU Wassil" data-ligne="entraînement" data-reussis="0" data-attendus="0"><td class="nom"><div class="dedans"><a class="etiquette lien-eleve" href="abdouw.html" target="_blank" rel="noopener" title="ABDOU Wassil — ouvrir son bilan dans un nouvel onglet">ABDOU</a><span class="ratio"><span class="picto" title="entraînement">🏃</span> 0/0</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="suite" data-classe="" data-ligne="évaluation"><td class="ligne"><div class="dedans"><a class="etiquette lien-eleve" href="abdouw.html" target="_blank" rel="noopener" title="Wassil">Wassil</a><span class="ratio"><span class="picto" title="évaluation">🏆</span> 0/18</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="eleve pair" data-nom="ali yanis yanis" data-famille="ali yanis" data-classe="" data-affiche="ALI Yanis" data-ligne="entraînement" data-reussis="0" data-attendus="0"><td class="nom"><div class="dedans"><a class="etiquette lien-eleve" href="aliy3.html" target="_blank" rel="noopener" title="ALI Yanis — ouvrir son bilan dans un nouvel onglet">ALI</a><span class="ratio"><span class="picto" title="entraînement">🏃</span> 0/0</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="suite pair" data-classe="" data-ligne="évaluation"><td class="ligne"><div class="dedans"><a class="etiquette lien-eleve" href="aliy3.html" target="_blank" rel="noopener" title="Yanis">Yanis</a><span class="ratio"><span class="picto" title="évaluation">🏆</span> 0/18</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="eleve" data-nom="boudina lyna lyna" data-famille="boudina lyna" data-classe="" data-affiche="BOUDINA Lyna" data-ligne="entraînement" data-reussis="0" data-attendus="0"><td class="nom"><div class="dedans"><a class="etiquette lien-eleve" href="boudinal.html" target="_blank" rel="noopener" title="BOUDINA Lyna — ouvrir son bilan dans un nouvel onglet">BOUDINA</a><span class="ratio"><span class="picto" title="entraînement">🏃</span> 0/0</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="suite" data-classe="" data-ligne="évaluation"><td class="ligne"><div class="dedans"><a class="etiquette lien-eleve" href="boudinal.html" target="_blank" rel="noopener" title="Lyna">Lyna</a><span class="ratio"><span class="picto" title="évaluation">🏆</span> 0/18</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="eleve pair" data-nom="boudour leytte leytte" data-famille="boudour leytte" data-classe="" data-affiche="BOUDOUR Leytte" data-ligne="entraînement" data-reussis="0" data-attendus="0"><td class="nom"><div class="dedans"><a class="etiquette lien-eleve" href="boudourl.html" target="_blank" rel="noopener" title="BOUDOUR Leytte — ouvrir son bilan dans un nouvel onglet">BOUDOUR</a><span class="ratio"><span class="picto" title="entraînement">🏃</span> 0/0</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="suite pair" data-classe="" data-ligne="évaluation"><td class="ligne"><div class="dedans"><a class="etiquette lien-eleve" href="boudourl.html" target="_blank" rel="noopener" title="Leytte">Leytte</a><span class="ratio"><span class="picto" title="évaluation">🏆</span> 0/18</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="eleve" data-nom="boukortt slimani ikram nadjet ikram nadjet" data-famille="boukortt slimani ikram nadjet" data-classe="" data-affiche="BOUKORTT SLIMANI Ikram Nadjet" data-ligne="entraînement" data-reussis="0" data-attendus="0"><td class="nom"><div class="dedans"><a class="etiquette lien-eleve" href="boukorttslimanii.html" target="_blank" rel="noopener" title="BOUKORTT SLIMANI Ikram Nadjet — ouvrir son bilan dans un nouvel onglet">BOUKORTT SLIMANI</a><span class="ratio"><span class="picto" title="entraînement">🏃</span> 0/0</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="suite" data-classe="" data-ligne="évaluation"><td class="ligne"><div class="dedans"><a class="etiquette lien-eleve" href="boukorttslimanii.html" target="_blank" rel="noopener" title="Ikram Nadjet">Ikram Nadjet</a><span class="ratio"><span class="picto" title="évaluation">🏆</span> 0/18</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="eleve pair" data-nom="bretou jean paul jean paul" data-famille="bretou jean paul" data-classe="" data-affiche="BRETOU Jean Paul" data-ligne="entraînement" data-reussis="0" data-attendus="0"><td class="nom"><div class="dedans"><a class="etiquette lien-eleve" href="bretouj1.html" target="_blank" rel="noopener" title="BRETOU Jean Paul — ouvrir son bilan dans un nouvel onglet">BRETOU</a><span class="ratio"><span class="picto" title="entraînement">🏃</span> 0/0</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="suite pair" data-classe="" data-ligne="évaluation"><td class="ligne"><div class="dedans"><a class="etiquette lien-eleve" href="bretouj1.html" target="_blank" rel="noopener" title="Jean Paul">Jean Paul</a><span class="ratio"><span class="picto" title="évaluation">🏆</span> 0/18</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="eleve" data-nom="dhouafli abderahmen abderahmen" data-famille="dhouafli abderahmen" data-classe="" data-affiche="DHOUAFLI Abderahmen" data-ligne="entraînement" data-reussis="0" data-attendus="0"><td class="nom"><div class="dedans"><a class="etiquette lien-eleve" href="dhouaflia.html" target="_blank" rel="noopener" title="DHOUAFLI Abderahmen — ouvrir son bilan dans un nouvel onglet">DHOUAFLI</a><span class="ratio"><span class="picto" title="entraînement">🏃</span> 0/0</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="suite" data-classe="" data-ligne="évaluation"><td class="ligne"><div class="dedans"><a class="etiquette lien-eleve" href="dhouaflia.html" target="_blank" rel="noopener" title="Abderahmen">Abderahmen</a><span class="ratio"><span class="picto" title="évaluation">🏆</span> 0/18</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="eleve pair" data-nom="el hajjam yassine yassine" data-famille="el hajjam yassine" data-classe="" data-affiche="EL HAJJAM Yassine" data-ligne="entraînement" data-reussis="0" data-attendus="0"><td class="nom"><div class="dedans"><a class="etiquette lien-eleve" href="elhajjamy.html" target="_blank" rel="noopener" title="EL HAJJAM Yassine — ouvrir son bilan dans un nouvel onglet">EL HAJJAM</a><span class="ratio"><span class="picto" title="entraînement">🏃</span> 0/0</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="suite pair" data-classe="" data-ligne="évaluation"><td class="ligne"><div class="dedans"><a class="etiquette lien-eleve" href="elhajjamy.html" target="_blank" rel="noopener" title="Yassine">Yassine</a><span class="ratio"><span class="picto" title="évaluation">🏆</span> 0/18</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="eleve" data-nom="hassaine imen imen" data-famille="hassaine imen" data-classe="" data-affiche="HASSAINE Imen" data-ligne="entraînement" data-reussis="0" data-attendus="0"><td class="nom"><div class="dedans"><a class="etiquette lien-eleve" href="hassainei.html" target="_blank" rel="noopener" title="HASSAINE Imen — ouvrir son bilan dans un nouvel onglet">HASSAINE</a><span class="ratio"><span class="picto" title="entraînement">🏃</span> 0/0</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="suite" data-classe="" data-ligne="évaluation"><td class="ligne"><div class="dedans"><a class="etiquette lien-eleve" href="hassainei.html" target="_blank" rel="noopener" title="Imen">Imen</a><span class="ratio"><span class="picto" title="évaluation">🏆</span> 0/18</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="eleve pair" data-nom="himidi souraya souraya" data-famille="himidi souraya" data-classe="" data-affiche="HIMIDI Souraya" data-ligne="entraînement" data-reussis="0" data-attendus="0"><td class="nom"><div class="dedans"><a class="etiquette lien-eleve" href="himidis2.html" target="_blank" rel="noopener" title="HIMIDI Souraya — ouvrir son bilan dans un nouvel onglet">HIMIDI</a><span class="ratio"><span class="picto" title="entraînement">🏃</span> 0/0</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="suite pair" data-classe="" data-ligne="évaluation"><td class="ligne"><div class="dedans"><a class="etiquette lien-eleve" href="himidis2.html" target="_blank" rel="noopener" title="Souraya">Souraya</a><span class="ratio"><span class="picto" title="évaluation">🏆</span> 0/18</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="eleve" data-nom="issad jessime jessime" data-famille="issad jessime" data-classe="" data-affiche="ISSAD Jessime" data-ligne="entraînement" data-reussis="0" data-attendus="0"><td class="nom"><div class="dedans"><a class="etiquette lien-eleve" href="issadj.html" target="_blank" rel="noopener" title="ISSAD Jessime — ouvrir son bilan dans un nouvel onglet">ISSAD</a><span class="ratio"><span class="picto" title="entraînement">🏃</span> 0/0</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="suite" data-classe="" data-ligne="évaluation"><td class="ligne"><div class="dedans"><a class="etiquette lien-eleve" href="issadj.html" target="_blank" rel="noopener" title="Jessime">Jessime</a><span class="ratio"><span class="picto" title="évaluation">🏆</span> 0/18</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="eleve pair" data-nom="issimaila mous-anbou mous-anbou" data-famille="issimaila mous-anbou" data-classe="" data-affiche="ISSIMAILA Mous-Anbou" data-ligne="entraînement" data-reussis="0" data-attendus="0"><td class="nom"><div class="dedans"><a class="etiquette lien-eleve" href="issimailam1.html" target="_blank" rel="noopener" title="ISSIMAILA Mous-Anbou — ouvrir son bilan dans un nouvel onglet">ISSIMAILA</a><span class="ratio"><span class="picto" title="entraînement">🏃</span> 0/0</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="suite pair" data-classe="" data-ligne="évaluation"><td class="ligne"><div class="dedans"><a class="etiquette lien-eleve" href="issimailam1.html" target="_blank" rel="noopener" title="Mous-Anbou">Mous-Anbou</a><span class="ratio"><span class="picto" title="évaluation">🏆</span> 0/18</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="eleve" data-nom="khounkourkhanov bilel bilel" data-famille="khounkourkhanov bilel" data-classe="" data-affiche="KHOUNKOURKHANOV Bilel" data-ligne="entraînement" data-reussis="0" data-attendus="0"><td class="nom"><div class="dedans"><a class="etiquette lien-eleve" href="khounkourkhanovb.html" target="_blank" rel="noopener" title="KHOUNKOURKHANOV Bilel — ouvrir son bilan dans un nouvel onglet">KHOUNKOURKHANOV</a><span class="ratio"><span class="picto" title="entraînement">🏃</span> 0/0</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="suite" data-classe="" data-ligne="évaluation"><td class="ligne"><div class="dedans"><a class="etiquette lien-eleve" href="khounkourkhanovb.html" target="_blank" rel="noopener" title="Bilel">Bilel</a><span class="ratio"><span class="picto" title="évaluation">🏆</span> 0/18</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="eleve pair" data-nom="mahamoud hamdane hamdane" data-famille="mahamoud hamdane" data-classe="" data-affiche="MAHAMOUD Hamdane" data-ligne="entraînement" data-reussis="0" data-attendus="0"><td class="nom"><div class="dedans"><a class="etiquette lien-eleve" href="mahamoudh1.html" target="_blank" rel="noopener" title="MAHAMOUD Hamdane — ouvrir son bilan dans un nouvel onglet">MAHAMOUD</a><span class="ratio"><span class="picto" title="entraînement">🏃</span> 0/0</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="suite pair" data-classe="" data-ligne="évaluation"><td class="ligne"><div class="dedans"><a class="etiquette lien-eleve" href="mahamoudh1.html" target="_blank" rel="noopener" title="Hamdane">Hamdane</a><span class="ratio"><span class="picto" title="évaluation">🏆</span> 0/18</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="eleve" data-nom="mchinda fahyma fahyma" data-famille="mchinda fahyma" data-classe="" data-affiche="MCHINDA Fahyma" data-ligne="entraînement" data-reussis="0" data-attendus="0"><td class="nom"><div class="dedans"><a class="etiquette lien-eleve" href="mchindaf.html" target="_blank" rel="noopener" title="MCHINDA Fahyma — ouvrir son bilan dans un nouvel onglet">MCHINDA</a><span class="ratio"><span class="picto" title="entraînement">🏃</span> 0/0</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="suite" data-classe="" data-ligne="évaluation"><td class="ligne"><div class="dedans"><a class="etiquette lien-eleve" href="mchindaf.html" target="_blank" rel="noopener" title="Fahyma">Fahyma</a><span class="ratio"><span class="picto" title="évaluation">🏆</span> 0/18</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="eleve pair" data-nom="milles besmala besmala" data-famille="milles besmala" data-classe="" data-affiche="MILLES Besmala" data-ligne="entraînement" data-reussis="0" data-attendus="0"><td class="nom"><div class="dedans"><a class="etiquette lien-eleve" href="millesb.html" target="_blank" rel="noopener" title="MILLES Besmala — ouvrir son bilan dans un nouvel onglet">MILLES</a><span class="ratio"><span class="picto" title="entraînement">🏃</span> 0/0</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="suite pair" data-classe="" data-ligne="évaluation"><td class="ligne"><div class="dedans"><a class="etiquette lien-eleve" href="millesb.html" target="_blank" rel="noopener" title="Besmala">Besmala</a><span class="ratio"><span class="picto" title="évaluation">🏆</span> 0/18</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="eleve" data-nom="mokhtari naim naim" data-famille="mokhtari naim" data-classe="" data-affiche="MOKHTARI Naim" data-ligne="entraînement" data-reussis="0" data-attendus="0"><td class="nom"><div class="dedans"><a class="etiquette lien-eleve" href="mokhtarin2.html" target="_blank" rel="noopener" title="MOKHTARI Naim — ouvrir son bilan dans un nouvel onglet">MOKHTARI</a><span class="ratio"><span class="picto" title="entraînement">🏃</span> 0/0</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="suite" data-classe="" data-ligne="évaluation"><td class="ligne"><div class="dedans"><a class="etiquette lien-eleve" href="mokhtarin2.html" target="_blank" rel="noopener" title="Naim">Naim</a><span class="ratio"><span class="picto" title="évaluation">🏆</span> 0/18</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="eleve pair" data-nom="moumni mohamed mohamed" data-famille="moumni mohamed" data-classe="" data-affiche="MOUMNI Mohamed" data-ligne="entraînement" data-reussis="0" data-attendus="0"><td class="nom"><div class="dedans"><a class="etiquette lien-eleve" href="moumnim.html" target="_blank" rel="noopener" title="MOUMNI Mohamed — ouvrir son bilan dans un nouvel onglet">MOUMNI</a><span class="ratio"><span class="picto" title="entraînement">🏃</span> 0/0</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="suite pair" data-classe="" data-ligne="évaluation"><td class="ligne"><div class="dedans"><a class="etiquette lien-eleve" href="moumnim.html" target="_blank" rel="noopener" title="Mohamed">Mohamed</a><span class="ratio"><span class="picto" title="évaluation">🏆</span> 0/18</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="eleve" data-nom="oumouri ali naida naida" data-famille="oumouri ali naida" data-classe="" data-affiche="OUMOURI ALI Naida" data-ligne="entraînement" data-reussis="0" data-attendus="0"><td class="nom"><div class="dedans"><a class="etiquette lien-eleve" href="oumourialin1.html" target="_blank" rel="noopener" title="OUMOURI ALI Naida — ouvrir son bilan dans un nouvel onglet">OUMOURI ALI</a><span class="ratio"><span class="picto" title="entraînement">🏃</span> 0/0</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="suite" data-classe="" data-ligne="évaluation"><td class="ligne"><div class="dedans"><a class="etiquette lien-eleve" href="oumourialin1.html" target="_blank" rel="noopener" title="Naida">Naida</a><span class="ratio"><span class="picto" title="évaluation">🏆</span> 0/18</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="eleve pair" data-nom="pinoncely noa noa" data-famille="pinoncely noa" data-classe="" data-affiche="PINONCELY Noa" data-ligne="entraînement" data-reussis="0" data-attendus="0"><td class="nom"><div class="dedans"><a class="etiquette lien-eleve" href="pinoncelyn.html" target="_blank" rel="noopener" title="PINONCELY Noa — ouvrir son bilan dans un nouvel onglet">PINONCELY</a><span class="ratio"><span class="picto" title="entraînement">🏃</span> 0/0</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="suite pair" data-classe="" data-ligne="évaluation"><td class="ligne"><div class="dedans"><a class="etiquette lien-eleve" href="pinoncelyn.html" target="_blank" rel="noopener" title="Noa">Noa</a><span class="ratio"><span class="picto" title="évaluation">🏆</span> 0/18</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="eleve" data-nom="placier adixia adixia" data-famille="placier adixia" data-classe="" data-affiche="PLACIER Adixia" data-ligne="entraînement" data-reussis="0" data-attendus="0"><td class="nom"><div class="dedans"><a class="etiquette lien-eleve" href="placiera.html" target="_blank" rel="noopener" title="PLACIER Adixia — ouvrir son bilan dans un nouvel onglet">PLACIER</a><span class="ratio"><span class="picto" title="entraînement">🏃</span> 0/0</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="suite" data-classe="" data-ligne="évaluation"><td class="ligne"><div class="dedans"><a class="etiquette lien-eleve" href="placiera.html" target="_blank" rel="noopener" title="Adixia">Adixia</a><span class="ratio"><span class="picto" title="évaluation">🏆</span> 0/18</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="eleve pair" data-nom="rabia rayane mayas rayane mayas" data-famille="rabia rayane mayas" data-classe="" data-affiche="RABIA Rayane Mayas" data-ligne="entraînement" data-reussis="0" data-attendus="0"><td class="nom"><div class="dedans"><a class="etiquette lien-eleve" href="rabiar.html" target="_blank" rel="noopener" title="RABIA Rayane Mayas — ouvrir son bilan dans un nouvel onglet">RABIA</a><span class="ratio"><span class="picto" title="entraînement">🏃</span> 0/0</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="suite pair" data-classe="" data-ligne="évaluation"><td class="ligne"><div class="dedans"><a class="etiquette lien-eleve" href="rabiar.html" target="_blank" rel="noopener" title="Rayane Mayas">Rayane Mayas</a><span class="ratio"><span class="picto" title="évaluation">🏆</span> 0/18</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="eleve" data-nom="soihibou lina lina" data-famille="soihibou lina" data-classe="" data-affiche="SOIHIBOU Lina" data-ligne="entraînement" data-reussis="0" data-attendus="0"><td class="nom"><div class="dedans"><a class="etiquette lien-eleve" href="soihiboul.html" target="_blank" rel="noopener" title="SOIHIBOU Lina — ouvrir son bilan dans un nouvel onglet">SOIHIBOU</a><span class="ratio"><span class="picto" title="entraînement">🏃</span> 0/0</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="suite" data-classe="" data-ligne="évaluation"><td class="ligne"><div class="dedans"><a class="etiquette lien-eleve" href="soihiboul.html" target="_blank" rel="noopener" title="Lina">Lina</a><span class="ratio"><span class="picto" title="évaluation">🏆</span> 0/18</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="eleve pair" data-nom="zidi iyad iyad" data-famille="zidi iyad" data-classe="" data-affiche="ZIDI Iyad" data-ligne="entraînement" data-reussis="0" data-attendus="0"><td class="nom"><div class="dedans"><a class="etiquette lien-eleve" href="zidii.html" target="_blank" rel="noopener" title="ZIDI Iyad — ouvrir son bilan dans un nouvel onglet">ZIDI</a><span class="ratio"><span class="picto" title="entraînement">🏃</span> 0/0</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="suite pair" data-classe="" data-ligne="évaluation"><td class="ligne"><div class="dedans"><a class="etiquette lien-eleve" href="zidii.html" target="_blank" rel="noopener" title="Iyad">Iyad</a><span class="ratio"><span class="picto" title="évaluation">🏆</span> 0/18</span></div></td><td class="c g0 t0 n0 debut"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g0 t0 n0"></td><td class="c g1 t0 n0 debut"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td><td class="c g1 t0 n0"></td></tr><tr class="bilan b-1"><td class="nom" role="button" tabindex="0" aria-expanded="false" title="Afficher ou masquer les scores"><span class="lib"><span class="chevron">▸</span> <span class="picto" title="entraînement">🏃</span> Entraînement</span><span class="detail"></span></td><td class="c g0 t0 debut"></td><td class="c g0 t0"></td><td class="c g0 t0"></td><td class="c g0 t0"></td><td class="c g0 t0"></td><td class="c g1 t0 debut"></td><td class="c g1 t0"></td><td class="c g1 t0"></td><td class="c g1 t0"></td><td class="c g1 t0"></td></tr><tr class="bilan b-2"><td class="nom" role="button" tabindex="0" aria-expanded="false" title="Afficher ou masquer les scores"><span class="lib"><span class="chevron">▸</span> <span class="picto" title="évaluation">🏆</span> Évaluation</span><span class="detail"></span></td><td class="c g0 t0 debut"></td><td class="c g0 t0"></td><td class="c g0 t0"></td><td class="c g0 t0"></td><td class="c g0 t0"></td><td class="c g1 t0 debut"></td><td class="c g1 t0"></td><td class="c g1 t0"></td><td class="c g1 t0"></td><td class="c g1 t0"></td></tr></tbody></table>
+</div>
+<script>
+const tableau = document.querySelector('table');
+const info = document.getElementById('info');
+const NIVEAUX = {"0": "pas attendu", "1": "maîtrise insuffisante", "2": "début de maîtrise", "3": "maîtrise fragile", "4": "presque maîtrisé", "5": "maîtrise satisfaisante", "6": "très bonne maîtrise"};
+const COULEURS = {};
+
+function appliquer(){
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  let vus = 0;
+
+  const actives = [...document.querySelectorAll('.fclasse:checked')].map(c => c.value);
+  document.querySelectorAll('tr.eleve').forEach(tr => {
+    const ok = (!q || (tr.dataset.nom || '').includes(q))
+            && (!tr.dataset.classe || actives.includes(tr.dataset.classe));
+    if (ok) vus++;
+    tr.style.display = ok ? '' : 'none';
+    const suite = tr.nextElementSibling;
+    if (suite && suite.classList.contains('suite'))
+      suite.style.display = ok ? '' : 'none';
+  });
+
+  document.getElementById('compte').textContent =
+    vus + (vus > 1 ? ' élèves affichés' : ' élève affiché');
+  recompter();
+}
+
+
+// ── Les deux lignes de bilan ────────────────────────────────────────
+// Recalculées à chaque filtrage : seuls comptent les élèves AFFICHÉS,
+// et dans chaque colonne les points ATTENDUS (non gris) de la ligne
+// concernée. Réussi = niveau au moins égal au seuil de config.py.
+const SEUIL = 4;
+const PALIERS = [[75, "#1E7B32"], [50, "#8A7B1F"], [25, "#B3492F"], [0, "#E63329"]];
+const corpsTableau = tableau ? tableau.tBodies[0] : null;
+const bilan1 = corpsTableau ? corpsTableau.querySelector('tr.bilan.b-1') : null;
+const bilan2 = corpsTableau ? corpsTableau.querySelector('tr.bilan.b-2') : null;
+
+function niveauDe(td){
+  const m = td.className.match(/(?:^| )n(\d+)(?: |$)/);
+  return m ? +m[1] : 0;
+}
+
+function ecrireTaux(td, ok, total){
+  if (!total){
+    // Un tiret aussi sur la seconde ligne : « rien d'attendu » y
+    // etait plus bavard que clair, et plus large que la colonne.
+    td.innerHTML = '<span class="taux vide">\u2014</span>'
+                 + '<span class="detail">\u2014</span>';
+    return;
+  }
+  const p = Math.round(100 * ok / total);
+  const couleur = PALIERS.find(([seuil]) => p >= seuil)[1];
+  // Le % en petit : il coute 5 px et leve toute ambiguite. Le ratio
+  // en fraction, de la meme couleur que le pourcentage qu'il detaille.
+  td.innerHTML = '<span class="taux" style="color:' + couleur + '">' + p
+               + '<small>%</small></span>'
+               + '<span class="detail" style="color:' + couleur + '">'
+               + '<span class="num">' + ok + '</span>'
+               + '<span class="den">' + total + '</span></span>';
+}
+
+function recompter(){
+  if (!bilan1 || !bilan2) return;
+  const eleves = [...corpsTableau.querySelectorAll('tr.eleve')]
+                   .filter(tr => tr.style.display !== 'none');
+  const suites = eleves.map(tr => tr.nextElementSibling)
+                   .filter(s => s && s.classList.contains('suite'));
+  const n = eleves.length;
+  const libelle = 'sur ' + n + (n > 1 ? ' élèves affichés' : ' élève affiché');
+
+  [[bilan1, eleves], [bilan2, suites]].forEach(([bilan, rangs]) => {
+    bilan.cells[0].querySelector('.detail').textContent = libelle;
+    for (let i = 1; i < bilan.cells.length; i++){
+      const cible = bilan.cells[i];
+      if (cible.classList.contains('c')){
+        let ok = 0, total = 0;
+        rangs.forEach(tr => {
+          const td = tr.cells[i];
+          if (td && td.classList.contains('a')){
+            total++;
+            if (niveauDe(td) >= SEUIL) ok++;
+          }
+        });
+        ecrireTaux(cible, ok, total);
+      } else if (cible.classList.contains('moyenne')){
+        let somme = 0;
+        rangs.forEach(tr => { somme += parseInt(tr.cells[i].textContent) || 0; });
+        cible.innerHTML = (rangs.length ? Math.round(somme / rangs.length) : 0)
+                        + '<span class="detail">moy.</span>';
+      }
+    }
+  });
+
+  // Deux lignes figées en bas : la première se pose sur la seconde,
+  // dont la hauteur change quand on la déplie.
+  const h = bilan2.getBoundingClientRect().height;
+  [...bilan1.cells].forEach(td => { td.style.bottom = h + 'px'; });
+}
+
+// Un clic (ou Entrée) sur l'intitulé déplie ou replie SA ligne.
+[bilan1, bilan2].filter(Boolean).forEach(bilan => {
+  const tete = bilan.cells[0];
+  const basculer = () => {
+    tete.setAttribute('aria-expanded', bilan.classList.toggle('ouverte'));
+    recompter();
+  };
+  tete.addEventListener('click', basculer);
+  tete.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); basculer(); }
+  });
+});
+window.addEventListener('resize', recompter);
+
+
+// Masquer un thème : ses colonnes ET son en-tête disparaissent, et un
+// bouton apparaît en haut pour le faire revenir.
+function majReplis(){
+  const replies = [...document.querySelectorAll('th.theme.replie')];
+  document.getElementById('replis').textContent =
+    replies.map(x => '.' + x.dataset.g + '{display:none}').join(' ');
+  const liste = document.getElementById('replies-liste');
+  liste.innerHTML = '';
+  replies.forEach(x => {
+    const b = document.createElement('button');
+    b.className = 'revenir';
+    b.textContent = '↺ ' + x.dataset.titre;
+    b.title = 'Réafficher ce thème';
+    b.onclick = () => { x.classList.remove('replie'); majReplis(); };
+    liste.appendChild(b);
+  });
+  document.getElementById('replies').hidden = replies.length === 0;
+}
+// « Temps de travail » porte la classe « theme » pour son apparence, mais
+// ce n'est pas un thème : il n'a pas de colonnes à replier, et le cliquer
+// faisait apparaître un bouton « undefined » qui ne masquait rien.
+document.querySelectorAll('th.theme:not(.temps)').forEach(th => {
+  th.addEventListener('click', () => { th.classList.add('replie'); majReplis(); });
+});
+
+// Filtre par classe : une case à cocher par classe rencontrée.
+const zoneClasses = document.getElementById('classes');
+[...new Set([...document.querySelectorAll('tr.eleve')]
+    .map(tr => tr.dataset.classe).filter(Boolean))].sort().forEach(c => {
+  const l = document.createElement('label');
+  l.className = 'classe-' + (COULEURS[c] || 'x');
+  l.innerHTML = '<input type="checkbox" class="fclasse" value="' + c + '" checked> ' + c;
+  zoneClasses.appendChild(l);
+});
+zoneClasses.querySelectorAll('.fclasse')
+  .forEach(c => c.addEventListener('change', appliquer));
+
+// Au survol d'une case : l'intitulé complet de l'exercice, dans une
+// barre unique plutôt qu'une infobulle par cellule.
+let derniere = null;
+tableau.addEventListener('mouseover', e => {
+  // Une pastille, ou directement l'en-tete de la colonne : dans les deux
+  // cas on montre l'intitule complet de l'exercice.
+  const entete = e.target.closest('th.exo')
+      || (() => {
+           const td = e.target.closest('td.c');
+           if (!td) return null;
+           if (derniere) derniere.classList.remove('vise');
+           td.classList.add('vise');
+           derniere = td;
+           const i = [...td.parentElement.children].indexOf(td);
+           return tableau.tHead.rows[1].cells[i];
+         })();
+  if (!entete) return;
+  const code = entete.textContent.trim();
+  const intitule = entete.dataset.titre || '';
+  info.className = '';
+  info.textContent = intitule ? code + ' — ' + intitule : code;
+});
+tableau.addEventListener('mouseleave', () => {
+  if (derniere) derniere.classList.remove('vise');
+  info.className = 'vide';
+  info.textContent = 'Survolez une case pour en voir le détail.';
+});
+
+document.getElementById('q').addEventListener('input', appliquer);
+appliquer();
+
+
+/* ── Replier la fin grise de chaque feuille ──────────────────────
+   Une colonne ou tout le monde est gris — « pas attendu, pas commence »
+   — ne dit rien de personne. Mais la replier au milieu d'une feuille
+   casserait l'ordre des exercices : on ne replie donc que la QUEUE,
+   c'est-a-dire une colonne grise dont tout ce qui suit, dans sa
+   feuille, est gris aussi. N15 reste affiche parce que N16 porte des
+   resultats ; N23 a N30 se replient parce qu'apres eux il n'y a plus
+   rien.
+   Le calcul porte sur TOUS les eleves, une fois pour toutes : filtrer
+   une classe ne fait pas apparaitre ou disparaitre des colonnes sous
+   les yeux. */
+(function(){
+  const grille = document.querySelector('table');
+  if (!grille) return;
+
+  const temps = [...grille.querySelectorAll('th.theme')]
+                  .find(e => /temps de travail/i.test(e.innerText));
+  const entetes = [...grille.querySelectorAll('th.exo')];
+  if (temps){
+    const combien = temps.colSpan || 1;
+    entetes.slice(entetes.length - combien)
+           .forEach(e => e.classList.add('periode'));
+  }
+
+  const grise = td => td.classList.contains('c')
+      && !td.classList.contains('a')
+      && (td.classList.contains('n0') || td.classList.contains('n1'));
+
+  const rangees = [...grille.querySelectorAll('tr.eleve, tr.suite')];
+  const colonneGrise = i => rangees.every(tr => {
+    const td = tr.cells[i];
+    return !td || grise(td);
+  });
+
+  const vides = [];
+  let rang = 1;                       // 0 = la colonne des noms
+  for (const th of grille.querySelectorAll('th.theme')){
+    const large = th.colSpan || 1;
+    th.dataset.colspan = large;
+    if (!/temps de travail/i.test(th.innerText)){
+      for (let k = large - 1; k >= 0; k--){
+        if (!colonneGrise(rang + k)) break;
+        vides.push(rang + k);
+      }
+    }
+    rang += large;
+  }
+  if (!vides.length) return;
+
+  function replierVides(replier){
+    for (const i of vides)
+      for (const tr of grille.rows){
+        const c = tr.cells[i];
+        if (c) c.classList.toggle('cachee', replier);
+      }
+    let rang = 1;
+    for (const th of grille.querySelectorAll('th.theme')){
+      const large = +th.dataset.colspan;
+      let caches = 0;
+      for (let k = 0; k < large; k++) if (vides.includes(rang + k)) caches++;
+      rang += large;
+      th.colSpan = replier ? Math.max(1, large - caches) : large;
+      th.classList.toggle('cachee', replier && caches === large);
+    }
+  }
+
+  const barre = document.querySelector('.barre');
+  if (barre){
+    const boite = document.createElement('label');
+    boite.id = 'vides';
+    boite.innerHTML = '<input type="checkbox" checked> replier les '
+      + vides.length + ' colonne(s) de fin que personne n’a commencée';
+    barre.appendChild(boite);
+    boite.querySelector('input').addEventListener('change',
+      e => replierVides(e.target.checked));
+  }
+  replierVides(true);
+})();
+</script>
+</body></html>

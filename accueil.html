@@ -1,0 +1,33 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#3C3489">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Bilans 6e">
+<title>Bilans 6e</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;
+  background:#F7F7FA;color:#25243B;padding:20px;
+  display:flex;flex-direction:column;gap:14px;min-height:100vh}
+h1{font-size:20px}
+p.sous{color:#6B6A85;font-size:13px}
+a.lien{display:block;background:#fff;border:1px solid #E4E3EE;
+  border-left:6px solid var(--teinte);border-radius:12px;
+  padding:16px 18px;text-decoration:none;color:inherit}
+a.lien:active{background:#EEEDF8}
+.titre{display:block;font-size:17px;font-weight:700;color:var(--teinte)}
+.dit{display:block;font-size:13px;color:#6B6A85;margin-top:3px}
+.pied{margin-top:auto;font-size:12px;color:#8A89A0;line-height:1.6}
+@media (prefers-color-scheme:dark){
+  body{background:#15141C;color:#ECEBF4}
+  a.lien{background:#1E1D28;border-color:#302E3F}
+  .dit,.pied,p.sous{color:#9A98AD}
+  .titre{filter:brightness(1.7)}
+}
+</style></head><body>
+<h1>Bilans 6e</h1>
+<p class="sous">Données du 20/11/2026 · 24 élèves</p>
+<a class="lien" href="tableau_classe.html" style="--teinte:#3C3489"><span class="titre">Tableau de classe</span><span class="dit">Entraînements et évaluations, thème par thème</span></a><a class="lien" href="tableau_calcul_mental.html" style="--teinte:#5B2D8E"><span class="titre">Calcul mental</span><span class="dit">Entraînement et test chronométré</span></a><a class="lien" href="visuels.html" style="--teinte:#2F4A7A"><span class="titre">Toutes les pages élèves</span><span class="dit">Le bilan de chaque élève, à la suite</span></a><a class="lien" href="sms.html" style="--teinte:#1F6B4A"><span class="titre">Envoyer les SMS</span><span class="dit">Les messages de la semaine aux familles</span></a>
+<p class="pied">Les numéros des familles ne sont pas en ligne : la page
+d'envoi les lit dans ce téléphone, où ils sont importés une fois pour
+toutes. La version complète, numéros compris, reste sur l'ordinateur.</p>
+</body></html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html><html lang="fr"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#1a1a2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="SMS Parents">
+<title>SMS Parents</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+/* Sans cela, display:flex l'emporte sur l'attribut hidden. */
+[hidden]{display:none!important}
+body{font-family:Arial,sans-serif;font-size:16px;background:#f0f2f5;color:#1a1a2e;padding-bottom:40px}
+header{background:#1a1a2e;color:#fff;padding:14px 16px;position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:10px}
+header h1{font-size:17px;font-weight:bold}
+header p{font-size:12px;color:#aaa;margin-top:2px}
+.bdg{background:#16a34a;color:#fff;border-radius:20px;padding:4px 10px;font-size:13px;font-weight:bold;white-space:nowrap}
+.wrap{padding:14px}
+.info{background:#dbeafe;border:1px solid #93c5fd;border-radius:10px;padding:13px;font-size:14px;color:#1e40af;margin-bottom:14px;line-height:1.6}
+.alerte{background:#fee2e2;border-color:#fca5a5;color:#991b1b}
+.ctr{background:#fff;border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;font-size:14px}
+.ctr span{color:#666}.ctr strong{color:#16a34a;font-size:20px}
+.sc{background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.sr{display:flex;align-items:center;gap:12px}
+.si{flex:1;min-width:0}
+.sn{font-weight:bold;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sp{font-size:12px;color:#888;margin-top:2px}
+.sb{flex-shrink:0;display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.sbtn{display:inline-block;background:#16a34a;color:#fff;border:none;border-radius:10px;padding:11px 14px;font-size:14px;font-weight:bold;cursor:pointer;text-decoration:none;font-family:Arial,sans-serif}
+.sbtn:active{opacity:.8}.sbtn.sent{background:#4f9eff}.sbtn.off{background:#ccc;pointer-events:none}
+.wbtn{display:inline-block;background:#25d366;color:#fff;border:none;border-radius:10px;padding:11px 10px;font-size:14px;font-weight:bold;cursor:pointer;text-decoration:none;font-family:Arial,sans-serif}
+.wbtn:active{opacity:.8}
+.cbtn{display:inline-block;background:#6b7280;color:#fff;border:none;border-radius:10px;padding:11px 10px;font-size:13px;font-weight:bold;cursor:pointer;font-family:Arial,sans-serif}
+.cbtn:active{opacity:.8}.cbtn.ok{background:#16a34a}
+.mprev{background:#f8f9fa;border:1px solid #e0e0e0;border-radius:8px;padding:10px 12px;font-size:12px;line-height:1.6;white-space:pre-wrap;word-break:break-word;color:#444;margin-top:10px;max-height:56px;overflow:hidden;cursor:pointer}
+.mprev.open{max-height:2000px}
+.mhint{font-size:11px;color:#bbb;margin-top:3px;text-align:center}
+.boite{background:#fff;border-radius:12px;padding:16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.1);font-size:14px;line-height:1.6}
+.boite h2{font-size:16px;margin-bottom:8px}
+.boite p{margin-bottom:10px;color:#444}
+input[type=file]{width:100%;font-size:14px;margin-bottom:12px}
+textarea{width:100%;height:110px;font-family:monospace;font-size:13px;padding:8px;border:1px solid #ccc;border-radius:8px;margin-bottom:10px}
+.pied{text-align:center;font-size:12px;color:#888;margin-top:18px;line-height:1.8}
+.pied a{color:#1e40af}
+</style></head><body>
+<header><div><h1>SMS Parents</h1><p id="soustitre">chargement…</p></div>
+<span class="bdg" id="bdg">0/0</span></header>
+<div class="wrap">
+  <div id="etat"></div>
+  <div class="boite" id="accueil" hidden>
+    <h2>Les numéros des familles</h2>
+    <p>Ils ne sont pas en ligne et n'y seront jamais. Importez une fois
+       <strong>telephones.csv</strong> : ce téléphone le gardera, et les
+       semaines suivantes il n'y aura plus rien à faire.</p>
+    <input type="file" id="fichier" accept=".csv,.txt,text/csv,text/plain">
+    <p>Ou collez son contenu ci-dessous :</p>
+    <textarea id="colle" placeholder="identifiant,telephone1,telephone2&#10;edupont,0600000001,"></textarea>
+    <button class="sbtn" id="valider">Enregistrer les numéros</button>
+  </div>
+  <div class="ctr" id="compteur" hidden><span>Envoyés</span><strong id="dc">0</strong></div>
+  <div id="liste"></div>
+  <div class="pied" id="pied" hidden>
+    <a href="#" id="rechanger">Remplacer le fichier des numéros</a><br>
+    <a href="accueil.html">Retour aux bilans</a>
+  </div>
+</div>
+<script>
+var CLE_TEL = 'bilans.telephones.v1';
+var CLE_FAITS = 'bilans.envoyes.';
+var numeros = null, donnees = null, faits = [], clefaits = '';
+
+function lire(cle, defaut) {
+  try { return JSON.parse(localStorage.getItem(cle)) || defaut; }
+  catch (e) { return defaut; }
+}
+function ecrire(cle, valeur) {
+  try { localStorage.setItem(cle, JSON.stringify(valeur)); } catch (e) {}
+}
+
+/* telephones.csv : une ligne par élève, lignes # ignorées. On retrouve
+   les colonnes par leur intitulé, et à défaut on prend les deux
+   premières — c'est l'ordre du fichier modèle. */
+function analyser(texte) {
+  var table = {}, lignes = texte.split(/\r?\n/), rId = 0, rTel = 1, entete = false;
+  for (var i = 0; i < lignes.length; i++) {
+    var l = lignes[i].trim();
+    if (!l || l.charAt(0) === '#') continue;
+    var c = l.split(/[;,\t]/);
+    for (var j = 0; j < c.length; j++) c[j] = c[j].trim();
+    if (!entete && /identifiant/i.test(l)) {
+      entete = true;
+      for (var k = 0; k < c.length; k++) {
+        if (/^identifiant$/i.test(c[k])) rId = k;
+        if (/^telephone1?$/i.test(c[k]) && rTel === 1) rTel = k;
+      }
+      continue;
+    }
+    var id = c[rId] || '', tel = (c[rTel] || '').replace(/[^0-9+]/g, '');
+    if (id && tel) table[id] = tel;
+  }
+  return table;
+}
+
+function versInternational(tel) {
+  if (tel.charAt(0) === '+') return tel.slice(1);
+  if (tel.charAt(0) === '0') return '33' + tel.slice(1);
+  return tel;
+}
+
+function echapper(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                  .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function majCompteur() {
+  var total = donnees ? donnees.messages.length : 0;
+  document.getElementById('bdg').textContent = faits.length + '/' + total;
+  document.getElementById('dc').textContent = faits.length;
+}
+
+function marquer(id) {
+  if (faits.indexOf(id) < 0) { faits.push(id); ecrire(clefaits, faits); }
+  var b = document.querySelector('[data-id="' + id + '"] .sbtn');
+  if (b) { b.classList.add('sent'); b.textContent = 'Envoyé'; }
+  majCompteur();
+}
+
+function afficher() {
+  var liste = document.getElementById('liste');
+  if (!donnees) return;
+  document.getElementById('soustitre').textContent =
+      donnees.date_lisible + ' — bilan de ' + donnees.periode;
+  clefaits = CLE_FAITS + donnees.date;
+  faits = lire(clefaits, []);
+
+  if (!numeros) { liste.innerHTML = ''; return; }
+
+  var html = '', manquants = 0;
+  for (var i = 0; i < donnees.messages.length; i++) {
+    var m = donnees.messages[i], tel = numeros[m.id] || '';
+    var deja = faits.indexOf(m.id) >= 0;
+    html += '<div class="sc" data-id="' + echapper(m.id) + '"><div class="sr">';
+    html += '<div class="si"><div class="sn">' + echapper(m.nom) + '</div>';
+    html += '<div class="sp">' + (tel ? echapper(tel) : 'Pas de numéro') + '</div></div>';
+    html += '<div class="sb">';
+    if (tel) {
+      html += '<button class="sbtn' + (deja ? ' sent' : '') + '" data-envoi="' + i + '">'
+            + (deja ? 'Envoyé' : 'SMS') + '</button>';
+      html += '<a class="wbtn" target="_blank" href="https://wa.me/'
+            + versInternational(tel) + '?text=' + encodeURIComponent(m.texte) + '">WhatsApp</a>';
+      html += '<button class="cbtn" data-copie="' + i + '">📋</button>';
+    } else {
+      html += '<span class="sbtn off">Pas de numéro</span>';
+      manquants++;
+    }
+    html += '</div></div>';
+    html += '<div class="mprev" data-ouvre="' + i + '">' + echapper(m.texte) + '</div>';
+    html += '<div class="mhint">Appuyer pour lire le message complet</div></div>';
+  }
+  liste.innerHTML = html;
+  document.getElementById('compteur').hidden = false;
+  document.getElementById('pied').hidden = false;
+  majCompteur();
+  if (manquants) {
+    etat('<strong>' + manquants + '</strong> élève(s) sans numéro dans le fichier '
+       + 'importé. Complétez telephones.csv puis réimportez-le.', true);
+  }
+}
+
+function etat(message, alerte) {
+  var e = document.getElementById('etat');
+  e.innerHTML = message ? '<div class="info' + (alerte ? ' alerte' : '') + '">'
+                        + message + '</div>' : '';
+}
+
+document.addEventListener('click', function (ev) {
+  var cible = ev.target;
+  var i = cible.getAttribute && cible.getAttribute('data-envoi');
+  if (i !== null && i !== undefined) {
+    var m = donnees.messages[i], tel = numeros[m.id];
+    location.href = 'smsto:' + tel + '?body=' + encodeURIComponent(m.texte);
+    setTimeout(function () { marquer(m.id); }, 1500);
+    return;
+  }
+  var c = cible.getAttribute && cible.getAttribute('data-copie');
+  if (c !== null && c !== undefined) {
+    var texte = donnees.messages[c].texte;
+    navigator.clipboard.writeText(texte).then(function () {
+      cible.textContent = 'Copié !'; cible.classList.add('ok');
+      setTimeout(function () { cible.textContent = '📋'; cible.classList.remove('ok'); }, 2000);
+    });
+    return;
+  }
+  var o = cible.getAttribute && cible.getAttribute('data-ouvre');
+  if (o !== null && o !== undefined) cible.classList.toggle('open');
+});
+
+function enregistrer(texte) {
+  var table = analyser(texte);
+  var combien = Object.keys(table).length;
+  if (!combien) {
+    etat('Aucun numéro reconnu dans ce fichier. Il doit contenir une ligne '
+       + 'par élève : identifiant, numéro.', true);
+    return;
+  }
+  numeros = table;
+  ecrire(CLE_TEL, table);
+  document.getElementById('accueil').hidden = true;
+  etat('');
+  afficher();
+}
+
+document.getElementById('fichier').addEventListener('change', function (ev) {
+  var f = ev.target.files[0];
+  if (!f) return;
+  var lecteur = new FileReader();
+  lecteur.onload = function () { enregistrer(lecteur.result); };
+  lecteur.readAsText(f, 'utf-8');
+});
+document.getElementById('valider').addEventListener('click', function () {
+  enregistrer(document.getElementById('colle').value);
+});
+document.getElementById('rechanger').addEventListener('click', function (ev) {
+  ev.preventDefault();
+  document.getElementById('accueil').hidden = false;
+  window.scrollTo(0, 0);
+});
+
+numeros = lire(CLE_TEL, null);
+if (!numeros || !Object.keys(numeros).length) {
+  numeros = null;
+  document.getElementById('accueil').hidden = false;
+}
+
+/* no-store : sans cela le téléphone ressert les messages de la semaine
+   passée, ce qui est exactement le défaut que cette page corrige. */
+fetch('messages.json', { cache: 'no-store' })
+  .then(function (r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  })
+  .then(function (j) { donnees = j; afficher(); })
+  .catch(function (e) {
+    document.getElementById('soustitre').textContent = 'messages indisponibles';
+    etat('Les textes des messages n\'ont pas pu être chargés (' + e.message
+       + '). Vérifiez la connexion, ou relancez la routine du lundi pour '
+       + 'les déposer en ligne.', true);
+  });
+</script></body></html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bilan — Rayane Mayas — 2026-11-20</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;padding:10px;background:#fff}
+.header-titre{background:#5B2D8E;color:#fff;font-size:14px;font-weight:700;
+  padding:9px 14px;border-radius:10px 10px 0 0;text-align:center}
+.header-liens{background:#8462B3;padding:5px 14px;border-radius:0 0 10px 10px;
+  display:flex;justify-content:space-around;margin-bottom:12px}
+.header-liens a{color:#fff;text-decoration:none;font-size:12px;font-weight:600}
+.locked{color:rgba(255,255,255,0.4);font-size:12px;font-weight:600;
+  display:flex;align-items:center;gap:4px}
+table{border-collapse:separate;border-spacing:3px;width:100%;font-size:12px}
+th{background:#EEEDF8;color:#3C3489;padding:5px 7px;text-align:center;
+  border-radius:6px;font-weight:700;white-space:nowrap}
+th.label{min-width:160px;width:160px;background:transparent}
+td.label{padding:6px 8px;font-weight:700;font-size:11px;text-transform:uppercase;
+  letter-spacing:.04em;white-space:nowrap}
+td.entr-label{color:#1a6e3c}
+td.eval-label{color:#1e40af}
+td.cell{padding:4px;text-align:center;border-radius:7px}
+td.entr-cell{background:#F0FAF4}
+td.eval-cell{background:#EEF2FF}
+.gap{height:3px}
+
+.temps-wrap{border-radius:10px;overflow:hidden;border:1.5px solid #2F5D0E;margin-bottom:10px}
+.temps-titre{background:#2F5D0E;color:#fff;font-size:13px;font-weight:700;
+  padding:8px 14px;text-align:center;letter-spacing:.03em}
+.temps-body{background:#f6fbf2;padding:9px 11px}
+/* Une ligne par periode : intitule, duree, appreciation, alignes */
+.tps-ligne{display:grid;grid-template-columns:1fr auto 1fr;align-items:baseline;
+  gap:12px;padding:6px 12px;border-radius:7px;margin-bottom:4px}
+.tps-ligne .tps-quand{text-align:left}
+.tps-ligne .tps-min{text-align:center;font-weight:700;white-space:nowrap}
+.tps-ligne .tps-com{text-align:right;font-style:italic;color:#666;
+  font-size:12px}
+/* Trois niveaux de mise en valeur. L'intitule de la periode suit la
+   meme graduation que la duree : c'est ce qui rend la lecture coherente. */
+.tps-ligne-forte{background:#fff;border:1.5px solid #7ab648}
+.tps-ligne-forte .tps-quand{font-size:15px;font-weight:700;color:#254D0B}
+.tps-ligne-forte .tps-min{font-size:20px}
+.tps-ligne-forte .tps-com{font-size:12px}
+
+.tps-ligne-discrete{background:transparent;border:1px solid #e6f1da;
+  padding:4px 12px}
+.tps-ligne-discrete .tps-quand{font-size:12.5px;font-weight:600;color:#5F7A47}
+.tps-ligne-discrete .tps-min{font-size:13px}
+.tps-ligne-discrete .tps-com{font-size:11px}
+.tps-histo-titre{font-size:11px;font-weight:700;color:#2F5D0E;
+  text-transform:uppercase;letter-spacing:.06em;text-align:center;
+  margin:9px 0 5px;padding-top:8px;border-top:1px dashed #cfe4b8}
+.tps-maj{font-size:10px;color:#8aa176;text-align:right;margin-top:6px}
+.temps-cols{display:flex;flex-direction:column;gap:6px}
+.temps-col{background:#fff;border-radius:7px;padding:7px 12px;
+  border:1px solid #d4edc1;display:flex;align-items:baseline;
+  gap:10px;flex-wrap:wrap}
+.temps-col .temps-val{margin:0;font-size:17px}
+.temps-col .temps-note{margin:0}
+.temps-col-label{font-size:11px;font-weight:700;color:#2F5D0E;text-transform:uppercase;letter-spacing:.04em;min-width:140px;text-align:left}
+.temps-col-date{font-size:11px;color:#777}
+.temps-val{font-size:15px;font-weight:700;margin:3px 0}
+.temps-com{font-size:11px;color:#666;font-style:italic;margin-left:auto}
+.temps-note{font-size:10px;color:#aaa;margin-top:3px}
+.val-ok{color:#2F5D0E}
+.val-bad{color:#E63329}
+.val-mid{color:#F08000}
+
+.page{max-width:900px;margin:0 auto;padding:16px}
+.eleve-card{background:white;border-radius:12px;padding:20px;margin-bottom:24px;
+  box-shadow:0 2px 8px rgba(0,0,0,.1);page-break-after:always}
+.eleve-nom{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;font-size:20px;font-weight:bold;margin-bottom:14px;
+  border-bottom:2px solid #e0e0e0;padding-bottom:8px}
+.theme-wrap{margin-bottom:26px}
+tr.bandeau th{background:#5B2D8E;color:#fff;font-size:12px;font-weight:700;
+  padding:7px 7px;white-space:nowrap}
+/* Le titre du theme domine la ligne : c'est le repere de lecture */
+tr.bandeau th.titre-feuille{text-align:left;padding-left:14px;font-size:16px;
+  font-weight:800;border-radius:8px 0 0 8px;letter-spacing:.01em;
+  min-width:170px;border-left:5px solid #C9A5F0}
+tr.bandeau th.code{font-weight:600;font-size:11px;color:#E7DFF6}
+tr.bandeau th:last-child{border-radius:0 8px 8px 0}
+table.avec-bandeau{border-spacing:3px 2px}
+/* Historique des periodes, au bas du cadre vert */
+/* Historique : sous une ligne discrete, titre centre puis les semaines */
+.temps-resume{margin-top:9px;padding-top:8px;border-top:1px dashed #cfe4b8}
+.temps-resume-titre{font-size:11px;font-weight:700;color:#2F5D0E;
+  text-transform:uppercase;letter-spacing:.06em;text-align:center;
+  margin-bottom:6px}
+.temps-resume-cases{display:flex;gap:6px;justify-content:center;
+  flex-wrap:wrap}
+.tps-case{display:flex;flex-direction:column;align-items:center;
+  background:#fff;border:1px solid #d4edc1;border-radius:8px;
+  padding:3px 9px;color:#2F5D0E;line-height:1.25;min-width:52px}
+.tps-case b{font-size:15px}
+.tps-courante{background:#eaf6de;border-color:#9dcd77}
+.tps-quand{font-size:10px;color:#6f8a56}
+.tps-encours{color:#2F5D0E;font-weight:700}
+
+.compteurs{display:flex;gap:12px;margin-bottom:12px}
+.compteur{flex:1;border-radius:10px;padding:9px 14px;display:flex;
+  flex-direction:column;align-items:center;gap:1px;border:1.5px solid}
+.compteur.entr{background:#F0FAF4;border-color:#A8D66D;color:#2F5D0E}
+.compteur.eval{background:#EEF2FF;border-color:#A9B6E8;color:#3C3489}
+.compteur.calc{background:#FBF4FF;border-color:#C9A8E0;color:#5B2D8E}
+.compteur-titre{font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.05em;text-align:center}
+.compteur-val{font-size:21px;font-weight:700;line-height:1.15}
+.compteur-val .sur{font-size:14px;font-weight:400;opacity:.65}
+.compteur-part{font-size:11px;opacity:.8;text-align:center}
+.bloc-wims{margin-left:auto;display:flex;align-items:center;gap:10px;
+  flex-wrap:wrap}
+.rappel-ident{font-size:12px;font-weight:400;color:#5B2D8E;
+  background:#F3EDFB;border:1px solid #E0D2F5;border-radius:14px;
+  padding:4px 11px;white-space:nowrap}
+.rappel-ident b{font-weight:700;letter-spacing:.02em}
+.lien-wims{background:#5B2D8E;color:#fff;font-size:12px;
+  font-weight:600;text-decoration:none;padding:6px 13px;border-radius:16px;
+  white-space:nowrap}
+.lien-wims:hover{background:#4A2475}
+.maj{font-size:11px;color:#8A89A0;margin:-4px 0 12px}
+/* Bulle affichee au clic sur une pastille ou un code d'exercice */
+#bulle{position:fixed;z-index:99;background:#2B2A42;color:#fff;
+  font-size:13px;line-height:1.35;padding:8px 13px;border-radius:9px;
+  max-width:290px;box-shadow:0 6px 20px rgba(0,0,0,.22);
+  opacity:0;transform:translateY(4px);transition:opacity .15s,transform .15s;
+  pointer-events:none}
+#bulle.visible{opacity:1;transform:translateY(0)}
+#bulle b{display:block;font-size:12px;color:#C9B6EE;margin-bottom:2px}
+td.cell[data-titre]:not([data-titre=""]),
+th.code[data-titre]:not([data-titre=""]){cursor:pointer}
+.classe-eleve{font-size:15px;font-weight:400;color:#8462B3;margin-left:7px}
+.tps-maj{font-size:10px;color:#8aa176;margin-left:auto}
+.nav{background:#1a1a2e;color:white;padding:10px 16px;position:sticky;top:0;
+  z-index:10;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.nav a{color:#93c5fd;font-size:12px;text-decoration:none;white-space:nowrap}
+.nav-titre{color:#aaa;font-size:13px;font-weight:bold;margin-right:6px}
+/* ── Smartphone ────────────────────────────────────────────────── */
+@media (max-width:640px){
+  .page{padding:8px}
+  .eleve-card{padding:12px 10px}
+  .eleve-nom{font-size:18px;gap:8px}
+  .lien-wims{margin-left:0;width:100%;text-align:center}
+  .compteurs{flex-direction:column;gap:8px}
+  .temps-cols{flex-direction:column}
+  .temps-resume{gap:6px}
+  .tps-case{min-width:46px;padding:2px 7px}
+  .tps-maj{margin-left:0;width:100%}
+  /* Les tableaux de themes defilent horizontalement plutot que de
+     deborder : la page reste lisible sur un ecran etroit. */
+  .theme-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  tr.bandeau th.titre-feuille{font-size:14px;min-width:120px}
+  td.label{min-width:110px;width:110px;font-size:10px}
+  th.label{min-width:110px;width:110px}
+}
+#bulle{display:none}
+@media print{.nav{display:none}.eleve-card{box-shadow:none;break-after:page}body{background:white}}
+</style></head><body><div style="max-width:900px;margin:0 auto;padding:16px"><div class="eleve-card" id="eleve-rabiar"><div class="eleve-nom"><span class="ident-eleve">Rayane Mayas</span><span class="bloc-wims"><span class="rappel-ident">identifiant&nbsp;: <b>rabiar</b></span><a class="lien-wims" href="https://wims.univ-amu.fr/WIMs/wims.cgi?&+lang=fr&+module=adm%2Fclass%2Fclasses&+type=authparticipant&+class=7458330&+subclass=yes" target="_blank" rel="noopener">Se connecter à WIMS &#8599;</a></span></div><div class="maj">Mis à jour le 20/11/2026 à 09h56</div><div class="compteurs"><div class="compteur entr"><span class="compteur-titre">Entraînements</span><span class="compteur-val">0<span class="sur">/0</span></span><span class="compteur-part">0 % de réussite</span></div><div class="compteur eval"><span class="compteur-titre">Évaluations</span><span class="compteur-val">0<span class="sur">/18</span></span><span class="compteur-part">0 % de réussite</span></div><div class="compteur calc"><span class="compteur-titre">Calcul mental</span><span class="compteur-val">1</span><span class="compteur-part">calculs réussis</span></div></div><div class="theme-wrap"><table class="avec-bandeau">
+<thead><tr class="bandeau"><th class="titre-feuille">Nombres entiers</th><th class="code" data-exo="N1" data-titre="Multiplier un nombre entier par 10 par 100 par 1000">N1</th><th class="code" data-exo="N2" data-titre="Trouver le nombre de paquets de 10 de 100 ou de 1000 dans un nombre">N2</th><th class="code" data-exo="N3" data-titre="Écrire un nombre entier en chiffres">N3</th><th class="code" data-exo="N4" data-titre="Écrire un nombre entier en lettres">N4</th><th class="code" data-exo="N5" data-titre="Comparer des nombres entiers">N5</th><th class="code" data-exo="N6" data-titre="Repérer l'abscisse d'un nombre entier sur la ligne numérique">N6</th><th class="code" data-exo="N7" data-titre="Placer un nombre entier sur la ligne numérique">N7</th></tr></thead>
+<tbody>
+<tr><td class="label entr-label">🏃 entraînements</td><td class="cell entr-cell" data-exo="N1" data-titre="Multiplier un nombre entier par 10 par 100 par 1000"></td><td class="cell entr-cell" data-exo="N2" data-titre="Trouver le nombre de paquets de 10 de 100 ou de 1000 dans un nombre"></td><td class="cell entr-cell" data-exo="N3" data-titre="Écrire un nombre entier en chiffres"></td><td class="cell entr-cell" data-exo="N4" data-titre="Écrire un nombre entier en lettres"></td><td class="cell entr-cell" data-exo="N5" data-titre="Comparer des nombres entiers"></td><td class="cell entr-cell" data-exo="N6" data-titre="Repérer l'abscisse d'un nombre entier sur la ligne numérique"></td><td class="cell entr-cell" data-exo="N7" data-titre="Placer un nombre entier sur la ligne numérique"></td></tr>
+<tr class="gap"><td colspan="8"></td></tr>
+<tr><td class="label eval-label">🏆 évaluations</td><td class="cell eval-cell" data-exo="N1" data-titre="Multiplier un nombre entier par 10 par 100 par 1000"></td><td class="cell eval-cell" data-exo="N2" data-titre="Trouver le nombre de paquets de 10 de 100 ou de 1000 dans un nombre"></td><td class="cell eval-cell" data-exo="N3" data-titre="Écrire un nombre entier en chiffres"></td><td class="cell eval-cell" data-exo="N4" data-titre="Écrire un nombre entier en lettres"></td><td class="cell eval-cell" data-exo="N5" data-titre="Comparer des nombres entiers"></td><td class="cell eval-cell" data-exo="N6" data-titre="Repérer l'abscisse d'un nombre entier sur la ligne numérique"></td><td class="cell eval-cell" data-exo="N7" data-titre="Placer un nombre entier sur la ligne numérique"></td></tr>
+</tbody>
+</table>
+</div><div class="theme-wrap"><table class="avec-bandeau">
+<thead><tr class="bandeau"><th class="titre-feuille">Fractions</th><th class="code" data-exo="N9" data-titre="Utiliser des représentations de fractions">N9</th><th class="code" data-exo="N10" data-titre="Écrire un nombre entier comme une fraction">N10</th><th class="code" data-exo="N11" data-titre="Lire une fraction">N11</th><th class="code" data-exo="N12" data-titre="Prendre la fraction d’une quantité">N12</th><th class="code" data-exo="N13" data-titre="Placer une fraction sur la ligne numérique">N13</th><th class="code" data-exo="N14" data-titre="Écrire une fraction comme somme d'un entier et d'une fraction inférieure à 1">N14</th><th class="code" data-exo="N15" data-titre="Encadrer une fraction">N15</th><th class="code" data-exo="N16" data-titre="Comparer des fractions">N16</th></tr></thead>
+<tbody>
+<tr><td class="label entr-label">🏃 entraînements</td><td class="cell entr-cell" data-exo="N9" data-titre="Utiliser des représentations de fractions"></td><td class="cell entr-cell" data-exo="N10" data-titre="Écrire un nombre entier comme une fraction"></td><td class="cell entr-cell" data-exo="N11" data-titre="Lire une fraction"></td><td class="cell entr-cell" data-exo="N12" data-titre="Prendre la fraction d’une quantité"></td><td class="cell entr-cell" data-exo="N13" data-titre="Placer une fraction sur la ligne numérique"></td><td class="cell entr-cell" data-exo="N14" data-titre="Écrire une fraction comme somme d'un entier et d'une fraction inférieure à 1"></td><td class="cell entr-cell" data-exo="N15" data-titre="Encadrer une fraction"></td><td class="cell entr-cell" data-exo="N16" data-titre="Comparer des fractions"></td></tr>
+<tr class="gap"><td colspan="9"></td></tr>
+<tr><td class="label eval-label">🏆 évaluations</td><td class="cell eval-cell" data-exo="N9" data-titre="Utiliser des représentations de fractions"></td><td class="cell eval-cell" data-exo="N10" data-titre="Écrire un nombre entier comme une fraction"></td><td class="cell eval-cell" data-exo="N11" data-titre="Lire une fraction"></td><td class="cell eval-cell" data-exo="N12" data-titre="Prendre la fraction d’une quantité"></td><td class="cell eval-cell" data-exo="N13" data-titre="Placer une fraction sur la ligne numérique"></td><td class="cell eval-cell" data-exo="N14" data-titre="Écrire une fraction comme somme d'un entier et d'une fraction inférieure à 1"></td><td class="cell eval-cell" data-exo="N15" data-titre="Encadrer une fraction"></td><td class="cell eval-cell" data-exo="N16" data-titre="Comparer des fractions"></td></tr>
+</tbody>
+</table>
+</div><div class="theme-wrap"><table class="avec-bandeau">
+<thead><tr class="bandeau"><th class="titre-feuille">Nombres Décimaux</th><th class="code" data-exo="N21" data-titre="Écrire un nombre entier comme une fraction décimale">N21</th><th class="code" data-exo="N22" data-titre="Placer une fraction décimale sur la ligne numérique">N22</th><th class="code" data-exo="N23" data-titre="Transformer une fraction décimale">N23</th></tr></thead>
+<tbody>
+<tr><td class="label entr-label">🏃 entraînements</td><td class="cell entr-cell" data-exo="N21" data-titre="Écrire un nombre entier comme une fraction décimale"></td><td class="cell entr-cell" data-exo="N22" data-titre="Placer une fraction décimale sur la ligne numérique"></td><td class="cell entr-cell" data-exo="N23" data-titre="Transformer une fraction décimale"></td></tr>
+<tr class="gap"><td colspan="4"></td></tr>
+<tr><td class="label eval-label">🏆 évaluations</td><td class="cell eval-cell" data-exo="N21" data-titre="Écrire un nombre entier comme une fraction décimale"></td><td class="cell eval-cell" data-exo="N22" data-titre="Placer une fraction décimale sur la ligne numérique"></td><td class="cell eval-cell" data-exo="N23" data-titre="Transformer une fraction décimale"></td></tr>
+</tbody>
+</table>
+</div><div class="theme-wrap"><table class="avec-bandeau">
+<thead><tr class="bandeau"><th class="titre-feuille">Géométrie</th><th class="code" data-exo="G2.b1" data-titre="Reproduire un dessin géométrique : identifier les objets mathématiques (milieu segment)">G2.b1</th><th class="code" data-exo="G2.b2" data-titre="Reproduire un dessin géométrique : identifier les objets mathématiques (centre cercle)">G2.b2</th><th class="code" data-exo="G2.c1" data-titre="Reproduire un dessin géométrique : identifier les points qui ne sont pas accessibles (alignements)">G2.c1</th><th class="code" data-exo="G2.c2" data-titre="Reproduire un dessin géométrique : identifier les points qui ne sont pas accessibles">G2.c2</th><th class="code" data-exo="G3" data-titre="Utiliser un vocabulaire savant en géométrie">G3</th><th class="code" data-exo="G4" data-titre="Rédiger un programme de construction">G4</th><th class="code" data-exo="G5" data-titre="Suivre un programme de construction">G5</th><th class="code" data-exo="G6" data-titre="Connaître les propriétés des figures usuelles">G6</th></tr></thead>
+<tbody>
+<tr><td class="label entr-label">🏃 entraînements</td><td class="cell entr-cell" data-exo="G2.b1" data-titre="Reproduire un dessin géométrique : identifier les objets mathématiques (milieu segment)"></td><td class="cell entr-cell" data-exo="G2.b2" data-titre="Reproduire un dessin géométrique : identifier les objets mathématiques (centre cercle)"></td><td class="cell entr-cell" data-exo="G2.c1" data-titre="Reproduire un dessin géométrique : identifier les points qui ne sont pas accessibles (alignements)"></td><td class="cell entr-cell" data-exo="G2.c2" data-titre="Reproduire un dessin géométrique : identifier les points qui ne sont pas accessibles"></td><td class="cell entr-cell" data-exo="G3" data-titre="Utiliser un vocabulaire savant en géométrie"></td><td class="cell entr-cell" data-exo="G4" data-titre="Rédiger un programme de construction"></td><td class="cell entr-cell" data-exo="G5" data-titre="Suivre un programme de construction"></td><td class="cell entr-cell" data-exo="G6" data-titre="Connaître les propriétés des figures usuelles"></td></tr>
+<tr class="gap"><td colspan="9"></td></tr>
+<tr><td class="label eval-label">🏆 évaluations</td><td class="cell eval-cell" data-exo="G2.b1" data-titre="Reproduire un dessin géométrique : identifier les objets mathématiques (milieu segment)"></td><td class="cell eval-cell" data-exo="G2.b2" data-titre="Reproduire un dessin géométrique : identifier les objets mathématiques (centre cercle)"></td><td class="cell eval-cell" data-exo="G2.c1" data-titre="Reproduire un dessin géométrique : identifier les points qui ne sont pas accessibles (alignements)"></td><td class="cell eval-cell" data-exo="G2.c2" data-titre="Reproduire un dessin géométrique : identifier les points qui ne sont pas accessibles"></td><td class="cell eval-cell" data-exo="G3" data-titre="Utiliser un vocabulaire savant en géométrie"></td><td class="cell eval-cell" data-exo="G4" data-titre="Rédiger un programme de construction"></td><td class="cell eval-cell" data-exo="G5" data-titre="Suivre un programme de construction"></td><td class="cell eval-cell" data-exo="G6" data-titre="Connaître les propriétés des figures usuelles"></td></tr>
+</tbody>
+</table>
+</div></div></div>
+<div id="bulle"></div>
+<script>
+(function(){
+  const bulle = document.getElementById('bulle');
+  bulle.style.display = 'block';
+  let minuteur = null;
+  document.addEventListener('click', function(e){
+    const cible = e.target.closest('[data-titre]');
+    if (!cible || !cible.dataset.titre){
+      bulle.classList.remove('visible');
+      return;
+    }
+    bulle.innerHTML = '<b>' + cible.dataset.exo + '</b>' + cible.dataset.titre;
+    bulle.classList.add('visible');
+    const r = cible.getBoundingClientRect();
+    bulle.style.left = Math.min(Math.max(8, r.left + r.width/2 - 145),
+                                window.innerWidth - 300) + 'px';
+    bulle.style.top = (r.bottom + 8) + 'px';
+    clearTimeout(minuteur);
+    minuteur = setTimeout(() => bulle.classList.remove('visible'), 4000);
+  });
+})();
+</script>
+</body></html>
