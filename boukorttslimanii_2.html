@@ -21,33 +21,53 @@ td.entr-cell{background:#F0FAF4}
 td.eval-cell{background:#EEF2FF}
 .gap{height:3px}
 
-.temps-wrap{border-radius:10px;overflow:hidden;border:1.5px solid #2F5D0E;margin-bottom:10px}
-.temps-titre{background:#2F5D0E;color:#fff;font-size:13px;font-weight:700;
-  padding:8px 14px;text-align:center;letter-spacing:.03em}
-.temps-body{background:#f6fbf2;padding:9px 11px}
-/* Une ligne par periode : intitule, duree, appreciation, alignes */
-.tps-ligne{display:grid;grid-template-columns:1fr auto 1fr;align-items:baseline;
-  gap:12px;padding:6px 12px;border-radius:7px;margin-bottom:4px}
-.tps-ligne .tps-quand{text-align:left}
-.tps-ligne .tps-min{text-align:center;font-weight:700;white-space:nowrap}
-.tps-ligne .tps-com{text-align:right;font-style:italic;color:#666;
-  font-size:12px}
-/* Trois niveaux de mise en valeur. L'intitule de la periode suit la
-   meme graduation que la duree : c'est ce qui rend la lecture coherente. */
-.tps-ligne-forte{background:#fff;border:1.5px solid #7ab648}
-.tps-ligne-forte .tps-quand{font-size:15px;font-weight:700;color:#254D0B}
-.tps-ligne-forte .tps-min{font-size:20px}
-.tps-ligne-forte .tps-com{font-size:12px}
-
-.tps-ligne-discrete{background:transparent;border:1px solid #e6f1da;
-  padding:4px 12px}
-.tps-ligne-discrete .tps-quand{font-size:12.5px;font-weight:600;color:#5F7A47}
-.tps-ligne-discrete .tps-min{font-size:13px}
-.tps-ligne-discrete .tps-com{font-size:11px}
-.tps-histo-titre{font-size:11px;font-weight:700;color:#2F5D0E;
-  text-transform:uppercase;letter-spacing:.06em;text-align:center;
-  margin:9px 0 5px;padding-top:8px;border-top:1px dashed #cfe4b8}
-.tps-maj{font-size:10px;color:#8aa176;text-align:right;margin-top:6px}
+.temps-wrap{border-radius:12px;overflow:hidden;border:2px solid #2F5D0E;margin-bottom:10px}
+.temps-titre{background:#2F5D0E;color:#fff;font-size:15px;font-weight:700;
+  padding:8px 12px;text-align:center}
+.temps-body{background:#F6FBF2;padding:8px}
+.bw-entete,.bw-ligne,.bw-total{display:grid;align-items:center;gap:4px;
+  grid-template-columns:minmax(0,1.15fr) minmax(0,1fr) 52px 52px 52px}
+.bw-entete{font-size:9px;text-transform:uppercase;letter-spacing:.05em;
+  color:#6f8a56;padding:0 10px 4px;font-weight:700}
+.bw-entete > span{text-align:center}
+.bw-pic{font-size:18px;line-height:1.15;display:block}
+.bw-entete > span.bw-ch{padding:3px 0;color:#fff;border-radius:8px}
+.bw-ch.e{background:#5E9B2C}.bw-ch.v{background:#6B63C9}.bw-ch.c{background:#B45309}
+.bw-ligne{background:#fff;border:1px solid #cfe3bd;border-radius:8px;
+  padding:5px 10px;margin-bottom:4px}
+.bw-ligne.discrete{background:transparent;border-color:transparent;
+  padding-top:3px;padding-bottom:3px}
+/* Semaine non terminee : cadre en pointilles, duree neutre. Un « 0 min »
+   rouge en debut de semaine sonnerait comme un reproche. */
+.bw-ligne.encours{border:2px dashed #9dbb83;background:#fbfdf8}
+.bw-quand{font-weight:700;font-size:13px}
+.bw-ligne.discrete .bw-quand{font-weight:600;font-size:12px;color:#4a6336}
+.bw-min{font-size:17px;font-weight:700;text-align:center;white-space:nowrap}
+.bw-ligne.discrete .bw-min{font-size:13px}
+.val-ok{color:#2F5D0E}
+.val-bad{color:#E63329}
+.val-mid{color:#F08000}
+.val-enc{color:#8a9a7c}
+.bw-gain{text-align:center;font-weight:700;font-size:13px;border-radius:6px;
+  padding:1px 0}
+.bw-gain.e{color:#2F5D0E;background:#E8F5DC}
+.bw-gain.v{color:#3C3489;background:#E6E9FA}
+.bw-gain.c{color:#92400E;background:#FFE4B5}
+.bw-gain.rien{color:#b9c9ab;background:transparent;font-weight:400}
+.bw-total{border-top:3px solid #2F5D0E;margin:8px -8px -8px;padding:10px 18px 12px;
+  background:#E3F0D6;font-size:12px;line-height:1.15;font-weight:700;
+  color:#2F5D0E;text-transform:uppercase;letter-spacing:.04em}
+.bw-tt{text-transform:none;letter-spacing:0;font-size:17px;line-height:1;
+  text-align:center}
+.bw-tt small{display:block;font-size:9px;font-weight:400;opacity:.75;margin-top:3px}
+.bw-cumul{text-align:center;line-height:1;border-radius:8px;padding:6px 0;
+  text-transform:none;letter-spacing:0}
+.bw-cumul .fait{font-size:24px;font-weight:700}
+.bw-cumul .sur{font-size:11px;font-weight:400;opacity:.5}
+.bw-cumul small{display:block;font-size:9px;font-weight:400;opacity:.75;margin-top:3px}
+.bw-cumul.e{color:#1f4208;background:#B5DB8A}
+.bw-cumul.v{color:#2a2470;background:#BBC3F0}
+.bw-cumul.c{color:#7c2d05;background:#FFD59A}
 .temps-cols{display:flex;flex-direction:column;gap:6px}
 .temps-col{background:#fff;border-radius:7px;padding:7px 12px;
   border:1px solid #d4edc1;display:flex;align-items:baseline;
