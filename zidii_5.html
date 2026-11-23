@@ -1,0 +1,93 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Iyad — Triangles</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;padding:10px;background:#fff}
+.header-titre{background:#5B2D8E;color:#fff;font-size:14px;font-weight:700;
+  padding:9px 14px;border-radius:10px 10px 0 0;text-align:center}
+.header-liens{background:#8462B3;padding:5px 14px;border-radius:0 0 10px 10px;
+  display:flex;justify-content:space-around;margin-bottom:12px}
+.header-liens a{color:#fff;text-decoration:none;font-size:12px;font-weight:600}
+.locked{color:rgba(255,255,255,0.4);font-size:12px;font-weight:600;
+  display:flex;align-items:center;gap:4px}
+table{border-collapse:separate;border-spacing:3px;width:100%;font-size:12px}
+th{background:#EEEDF8;color:#3C3489;padding:5px 7px;text-align:center;
+  border-radius:6px;font-weight:700;white-space:nowrap}
+th.label{min-width:160px;width:160px;background:transparent}
+td.label{padding:6px 8px;font-weight:700;font-size:11px;text-transform:uppercase;
+  letter-spacing:.04em;white-space:nowrap}
+td.entr-label{color:#1a6e3c}
+td.eval-label{color:#1e40af}
+td.cell{padding:4px;text-align:center;border-radius:7px}
+td.entr-cell{background:#F0FAF4}
+td.eval-cell{background:#EEF2FF}
+.gap{height:3px}
+
+.temps-wrap{border-radius:12px;overflow:hidden;border:2px solid #2F5D0E;margin-bottom:10px}
+.temps-titre{background:#2F5D0E;color:#fff;font-size:15px;font-weight:700;
+  padding:8px 12px;text-align:center}
+.temps-body{background:#F6FBF2;padding:8px}
+.bw-entete,.bw-ligne,.bw-total{display:grid;align-items:center;gap:4px;
+  grid-template-columns:minmax(0,1.15fr) minmax(0,1fr) 52px 52px 52px}
+.bw-entete{font-size:9px;text-transform:uppercase;letter-spacing:.05em;
+  color:#6f8a56;padding:0 10px 4px;font-weight:700}
+.bw-entete > span{text-align:center}
+.bw-pic{font-size:18px;line-height:1.15;display:block}
+.bw-entete > span.bw-ch{padding:3px 0;color:#fff;border-radius:8px}
+.bw-ch.e{background:#5E9B2C}.bw-ch.v{background:#6B63C9}.bw-ch.c{background:#B45309}
+.bw-ligne{background:#fff;border:1px solid #cfe3bd;border-radius:8px;
+  padding:5px 10px;margin-bottom:4px}
+.bw-ligne.discrete{background:transparent;border-color:transparent;
+  padding-top:3px;padding-bottom:3px}
+/* Semaine non terminee : cadre en pointilles, duree neutre. Un « 0 min »
+   rouge en debut de semaine sonnerait comme un reproche. */
+.bw-ligne.encours{border:2px dashed #9dbb83;background:#fbfdf8}
+.bw-quand{font-weight:700;font-size:13px}
+.bw-ligne.discrete .bw-quand{font-weight:600;font-size:12px;color:#4a6336}
+.bw-min{font-size:17px;font-weight:700;text-align:center;white-space:nowrap}
+.bw-ligne.discrete .bw-min{font-size:13px}
+.val-ok{color:#2F5D0E}
+.val-bad{color:#E63329}
+.val-mid{color:#F08000}
+.val-enc{color:#8a9a7c}
+.bw-gain{text-align:center;font-weight:700;font-size:13px;border-radius:6px;
+  padding:1px 0}
+.bw-gain.e{color:#2F5D0E;background:#E8F5DC}
+.bw-gain.v{color:#3C3489;background:#E6E9FA}
+.bw-gain.c{color:#92400E;background:#FFE4B5}
+.bw-gain.rien{color:#b9c9ab;background:transparent;font-weight:400}
+.bw-total{border-top:3px solid #2F5D0E;margin:8px -8px -8px;padding:10px 18px 12px;
+  background:#E3F0D6;font-size:12px;line-height:1.15;font-weight:700;
+  color:#2F5D0E;text-transform:uppercase;letter-spacing:.04em}
+.bw-tt{text-transform:none;letter-spacing:0;font-size:17px;line-height:1;
+  text-align:center}
+.bw-tt small{display:block;font-size:9px;font-weight:400;opacity:.75;margin-top:3px}
+.bw-cumul{text-align:center;line-height:1;border-radius:8px;padding:6px 0;
+  text-transform:none;letter-spacing:0}
+.bw-cumul .fait{font-size:24px;font-weight:700}
+.bw-cumul .sur{font-size:11px;font-weight:400;opacity:.5}
+.bw-cumul small{display:block;font-size:9px;font-weight:400;opacity:.75;margin-top:3px}
+.bw-cumul.e{color:#1f4208;background:#B5DB8A}
+.bw-cumul.v{color:#2a2470;background:#BBC3F0}
+.bw-cumul.c{color:#7c2d05;background:#FFD59A}
+.temps-cols{display:flex;flex-direction:column;gap:6px}
+.temps-col{background:#fff;border-radius:7px;padding:7px 12px;
+  border:1px solid #d4edc1;display:flex;align-items:baseline;
+  gap:10px;flex-wrap:wrap}
+.temps-col .temps-val{margin:0;font-size:17px}
+.temps-col .temps-note{margin:0}
+.temps-col-label{font-size:11px;font-weight:700;color:#2F5D0E;text-transform:uppercase;letter-spacing:.04em;min-width:140px;text-align:left}
+.temps-col-date{font-size:11px;color:#777}
+.temps-val{font-size:15px;font-weight:700;margin:3px 0}
+.temps-com{font-size:11px;color:#666;font-style:italic;margin-left:auto}
+.temps-note{font-size:10px;color:#aaa;margin-top:3px}
+.val-ok{color:#2F5D0E}
+.val-bad{color:#E63329}
+.val-mid{color:#F08000}
+</style></head><body><table>
+<thead><tr><th class="label"></th><th>G9</th><th>G10</th><th>G12</th><th>G22</th><th>G23</th></tr></thead>
+<tbody>
+<tr><td class="label entr-label">🏃 entraînements</td><td class="cell entr-cell" data-exo="G9" data-titre=""><svg width="16" height="16"><circle cx="8" cy="8" r="8" fill="#D8D8DC"/></svg></td><td class="cell entr-cell" data-exo="G10" data-titre=""><svg width="16" height="16"><circle cx="8" cy="8" r="8" fill="#D8D8DC"/></svg></td><td class="cell entr-cell" data-exo="G12" data-titre=""><svg width="16" height="16"><circle cx="8" cy="8" r="8" fill="#D8D8DC"/></svg></td><td class="cell entr-cell" data-exo="G22" data-titre=""><svg width="16" height="16"><circle cx="8" cy="8" r="8" fill="#D8D8DC"/></svg></td><td class="cell entr-cell" data-exo="G23" data-titre=""><svg width="16" height="16"><circle cx="8" cy="8" r="8" fill="#D8D8DC"/></svg></td></tr>
+<tr class="gap"><td colspan="6"></td></tr>
+<tr><td class="label eval-label">🏆 évaluations</td><td class="cell eval-cell" data-exo="G9" data-titre=""><svg width="16" height="16"><circle cx="8" cy="8" r="8" fill="#D8D8DC"/></svg></td><td class="cell eval-cell" data-exo="G10" data-titre=""><svg width="16" height="16"><circle cx="8" cy="8" r="8" fill="#D8D8DC"/></svg></td><td class="cell eval-cell" data-exo="G12" data-titre=""><svg width="16" height="16"><circle cx="8" cy="8" r="8" fill="#D8D8DC"/></svg></td><td class="cell eval-cell" data-exo="G22" data-titre=""><svg width="16" height="16"><circle cx="8" cy="8" r="8" fill="#D8D8DC"/></svg></td><td class="cell eval-cell" data-exo="G23" data-titre=""><svg width="16" height="16"><circle cx="8" cy="8" r="8" fill="#D8D8DC"/></svg></td></tr>
+</tbody>
+</table>
+</body></html>
